@@ -7,7 +7,7 @@ import pytesseract
 import pdfplumber
 
 # ✅ Directly configure Google Gemini AI (Replace with your actual API key)
-genai.configure(api_key="AIzaSyAbeHdPJSwq70JaFUNbUqeSwehMQJjCccg")
+genai.configure(api_key="API KEY")
 
 # Function to extract text from PDF
 def extract_text_from_pdf(pdf_path):
