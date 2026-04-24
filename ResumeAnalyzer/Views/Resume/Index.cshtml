@@ -1,0 +1,82 @@
+@model ResumeAnalyzer.Models.ResumeAnalysisViewModel
+
+@{
+    ViewData["Title"] = "AI Resume Analyzer";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-5">AI Resume Analyzer</h1>
+    <p class="lead text-muted">Analyze your resume and match it with job descriptions using Google Gemini AI.</p>
+</div>
+
+<form asp-controller="Resume" asp-action="Analyze" method="post" enctype="multipart/form-data" id="analyzeForm">
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Resume" class="form-label fw-bold"></label>
+            <input asp-for="Resume" type="file" class="form-control" accept=".pdf" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="JobDescription" class="form-label fw-bold"></label>
+            <textarea asp-for="JobDescription" class="form-control" rows="4" placeholder="Paste the job description here..."></textarea>
+        </div>
+    </div>
+
+    <div class="d-grid gap-2 col-md-4 mx-auto mt-2">
+        <button type="submit" class="btn btn-primary btn-lg" id="analyzeBtn">
+            Analyze Resume
+        </button>
+    </div>
+</form>
+
+@if (!string.IsNullOrEmpty(Model?.ErrorMessage))
+{
+    <div class="alert alert-danger mt-4" role="alert">
+        @Model.ErrorMessage
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(Model?.AnalysisResult))
+{
+    <div class="alert alert-success mt-4" role="alert">
+        Analysis complete!
+    </div>
+    <div class="card mt-3">
+        <div class="card-body" id="analysisResult">
+            @* Rendered by marked.js from raw markdown *@
+        </div>
+    </div>
+}
+
+<div id="spinnerOverlay" class="d-none text-center mt-4">
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Analyzing...</span>
+    </div>
+    <p class="mt-2 text-muted">Analyzing resume...</p>
+</div>
+
+<hr class="mt-5" />
+<p class="text-center text-muted">
+    Powered by <strong>ASP.NET MVC</strong> and <strong>Google Gemini AI</strong> | Developed by <strong>You</strong>
+</p>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        // Render markdown result
+        (function () {
+            var raw = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model?.AnalysisResult ?? ""));
+            if (raw) {
+                var el = document.getElementById('analysisResult');
+                if (el) {
+                    el.innerHTML = marked.parse(raw);
+                }
+            }
+        })();
+
+        // Show spinner on form submit
+        document.getElementById('analyzeForm').addEventListener('submit', function () {
+            document.getElementById('analyzeBtn').disabled = true;
+            document.getElementById('spinnerOverlay').classList.remove('d-none');
+        });
+    </script>
+}
